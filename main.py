@@ -1,10 +1,8 @@
 import streamlit as st
-import pandas as pd
 
 ## CRIANDO UM DRE PARA CALCULAR O PAYBACK DE UMA FRANQUIA DE RESTAURANTE
 
 def calcular(margemTarget, custosFixos, custosVariaveis, taxaIfood):
-    #fatRange = range(int(custosFixos), 10000000, float(0.5))
     fat = custosFixos
     while True:
         valorIfood = taxaIfood*0.2*fat
@@ -15,10 +13,12 @@ def calcular(margemTarget, custosFixos, custosVariaveis, taxaIfood):
         fat += 0.1
     return fat
     
+def payback(Faturamento, Margem, InvestimentoInicial):
+    return round((InvestimentoInicial / (Faturamento * Margem)), 2)
 
 def main():
     st.title("DRE Calculator")
-    
+
     col1, col2 = st.columns(2)
     with col1:
         st.write('Custos Fixos')
@@ -46,18 +46,34 @@ def main():
         custosFixos = ocupacao + pessoal + utilidades + matEscritorio + servicosGerais + contador
         custosVariaveis = fundoMKT + royalties + mktLocal + custoTicketCartao + cmv + freteRegião + taxas
         Ponto_de_Equilíbrio = calcular(0, custosFixos, custosVariaveis, taxaDelivery)
-        margemCinco = calcular(0.05, custosFixos, custosVariaveis, taxaDelivery)
-        margemSete = calcular(0.07, custosFixos, custosVariaveis, taxaDelivery)
-        margemDez= calcular(0.10, custosFixos, custosVariaveis, taxaDelivery)
-        margemDoze = calcular(0.12, custosFixos, custosVariaveis, taxaDelivery)
+        fatMargemCinco = calcular(0.05, custosFixos, custosVariaveis, taxaDelivery)
+        fatMargemSete = calcular(0.07, custosFixos, custosVariaveis, taxaDelivery)
+        fatMargemDez= calcular(0.10, custosFixos, custosVariaveis, taxaDelivery)
+        fatMargemDoze = calcular(0.12, custosFixos, custosVariaveis, taxaDelivery)
         
+        col3, col4, col5 = st.columns(3)
         # Mostrar resultados
-        st.write("Cenários de Faturamento:")
-        st.write(f'Ponto de Equilíbrio: R$ {Ponto_de_Equilíbrio:.2f}')
-        st.write(f'Margem 5%: R$ {margemCinco:.2f}')
-        st.write(f'Margem 7%: R$ {margemSete:.2f}')
-        st.write(f'Margem 10%: R$ {margemDez:.2f}')
-        st.write(f'Margem 12%: R$ {margemDoze:.2f}')
-
+        with col3:
+            st.write("Faturamento:")
+            st.write(f'Ponto de Equilíbrio: R$ {Ponto_de_Equilíbrio:.1f}')
+            st.write(f'Margem 5%: R$ {fatMargemCinco:.1f}')
+            st.write(f'Margem 7%: R$ {fatMargemSete:.1f}')
+            st.write(f'Margem 10%: R$ {fatMargemDez:.1f}')
+            st.write(f'Margem 12%: R$ {fatMargemDoze:.1f}')
+        with col4:
+            st.write('Lucro Mensal:')
+            st.write(f'P.E: N/A')
+            st.write(f'5%: R$ {fatMargemCinco * 0.05:.0f}')
+            st.write(f'7%: R$ {fatMargemSete * 0.07:.0f}')
+            st.write(f'10%: R$ {fatMargemDez * 0.10:.0f}')
+            st.write(f'12%: R$ {fatMargemDoze * 0.12:.0f}')
+        with col5:
+            st.write("Payback:")
+            st.write('P.E: N/A')
+            st.write(f'5%: {payback(fatMargemCinco, 0.05, investimentoInicial):.0f} Meses')
+            st.write(f'7%: {payback(fatMargemSete, 0.07, investimentoInicial):.0f} Meses')
+            st.write(f'10%: {payback(fatMargemDez, 0.10, investimentoInicial):.0f} Meses')
+            st.write(f'12%: {payback(fatMargemDoze, 0.12, investimentoInicial):.0f} Meses')
+            
 if __name__ == "__main__":
     main()
